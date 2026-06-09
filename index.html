@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analog Communication Virtual Lab</title>
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- MathJax -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-satellite-dish"></i>
+                <h2>CommLab</h2>
+            </div>
+            <nav class="nav-menu">
+                <div class="nav-group">
+                    <h3>Module 2: AM</h3>
+                    <a href="#" class="nav-item active" data-target="am-dsbfc"><i class="fa-solid fa-wave-square"></i> AM-DSBFC</a>
+                    <a href="#" class="nav-item" data-target="am-dsbsc"><i class="fa-solid fa-water"></i> DSB-SC</a>
+                    <a href="#" class="nav-item" data-target="am-ssb"><i class="fa-solid fa-water"></i> SSB-SC</a>
+                </div>
+                <div class="nav-group">
+                    <h3>Module 3: Angle Mod</h3>
+                    <a href="#" class="nav-item" data-target="fm"><i class="fa-solid fa-rss"></i> FM Simulator</a>
+                    <a href="#" class="nav-item" data-target="pm"><i class="fa-solid fa-podcast"></i> PM Simulator</a>
+                </div>
+                <div class="nav-group">
+                    <h3>Tools</h3>
+                    <a href="#" class="nav-item"><i class="fa-solid fa-file-pdf"></i> Export Report</a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="workspace">
+            <header class="workspace-header">
+                <h1 id="experiment-title">AM-DSBFC Simulator</h1>
+                <div class="header-actions">
+                    <button class="btn btn-outline" id="btn-export"><i class="fa-solid fa-download"></i> Generate PDF</button>
+                    <button class="btn btn-primary" id="btn-run"><i class="fa-solid fa-play"></i> Auto-Sweep</button>
+                </div>
+            </header>
+
+            <div class="lab-bench">
+                <!-- Visualizations (Oscilloscope & Spectrum) -->
+                <div class="visuals-panel">
+                    <div class="instrument oscilloscope">
+                        <div class="instrument-header">
+                            <span><i class="fa-solid fa-desktop"></i> Oscilloscope</span>
+                            <div class="instrument-controls">
+                                <label>Timebase: <span id="timebase-val">1ms</span>/div</label>
+                            </div>
+                        </div>
+                        <div class="screen">
+                            <canvas id="osc-canvas"></canvas>
+                        </div>
+                        <div class="legend">
+                            <span class="legend-item"><span class="color-box msg-color"></span> Message Env</span>
+                            <span class="legend-item"><span class="color-box mod-color"></span> Modulated Signal</span>
+                        </div>
+                    </div>
+
+                    <div class="instrument spectrum-analyzer">
+                        <div class="instrument-header">
+                            <span><i class="fa-solid fa-chart-bar"></i> Spectrum Analyzer</span>
+                        </div>
+                        <div class="screen" style="background-color: #18181b;">
+                            <canvas id="spectrum-canvas"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Controls & Real-time Calculations -->
+                <div class="side-panel">
+                    <div class="panel-section controls-section">
+                        <h3><i class="fa-solid fa-sliders"></i> Signal Parameters</h3>
+                        
+                        <div class="control-group">
+                            <label>Message Freq (\(f_m\)) <span class="val" id="val-fm">1000 Hz</span></label>
+                            <input type="range" id="slider-fm" min="100" max="5000" step="100" value="1000">
+                        </div>
+                        <div class="control-group">
+                            <label>Message Amp (\(A_m\)) <span class="val" id="val-am">2 V</span></label>
+                            <input type="range" id="slider-am" min="0" max="10" step="0.5" value="2">
+                        </div>
+                        <div class="control-group">
+                            <label>Carrier Freq (\(f_c\)) <span class="val" id="val-fc">10000 Hz</span></label>
+                            <input type="range" id="slider-fc" min="5000" max="50000" step="1000" value="10000">
+                        </div>
+                        <div class="control-group">
+                            <label>Carrier Amp (\(A_c\)) <span class="val" id="val-ac">4 V</span></label>
+                            <input type="range" id="slider-ac" min="1" max="10" step="0.5" value="4">
+                        </div>
+                    </div>
+
+                    <div class="panel-section calculations-section">
+                        <h3><i class="fa-solid fa-calculator"></i> Real-time Analysis</h3>
+                        <div class="calc-grid">
+                            <div class="calc-box">
+                                <span class="calc-label">Modulation Index (\(\mu\))</span>
+                                <span class="calc-value" id="calc-mu">0.50</span>
+                                <span class="calc-status safe" id="calc-mu-status">Under Modulated</span>
+                            </div>
+                            <div class="calc-box">
+                                <span class="calc-label">Bandwidth (BW)</span>
+                                <span class="calc-value" id="calc-bw">2000 Hz</span>
+                            </div>
+                            <div class="calc-box">
+                                <span class="calc-label">Total Power (\(P_t\))</span>
+                                <span class="calc-value" id="calc-pt">8.00 W</span>
+                                <span class="calc-sub">assuming \(R=1\Omega\)</span>
+                            </div>
+                            <div class="calc-box">
+                                <span class="calc-label">Efficiency (\(\eta\))</span>
+                                <span class="calc-value" id="calc-eff">11.11%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/modules/oscilloscope.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
