@@ -1,7 +1,7 @@
 Analog Communication Virtual Laboratory Toolkit
 An interactive, high-fidelity, web-based virtual laboratory designed for Analog Communication (EC401) engineering curriculum. This project provides an Elite Academic Design Compliance telemetry dashboard to visualize, simulate, and mathematically model various analog modulation schemes in real-time.
 
-Virtual Lab Dashboard Screenshot(Placeholder: Add your screenshot here)
+Your site is live at https://rajasri74ece-jpg.github.io/Analog-Communication-Virtual-Lab-Toolkit/
 
 🌟 Features
 Elite Telemetry Dashboard: A professional, dark-themed, neon-accented UI that mimics real-world laboratory equipment.
